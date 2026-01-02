@@ -1,14 +1,44 @@
 #include <Arduino.h>
+#include <Arduino_Modulino.h>
+#include <Arduino_LED_Matrix.h>
+#include <ArduinoGraphics.h>
 
-void setup() {
+ModulinoThermo thermo;
+ArduinoLEDMatrix matrix;
+
+void setup()
+{
   // put your setup code here, to run once:
-  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.begin(9600);
+
+  //led matrix
+  matrix.begin();
+
+  // modulino
+  Modulino.begin();
+  thermo.begin();
 }
 
-void loop() {
+void loop()
+{
   // put your main code here, to run repeatedly:
-  digitalWrite(LED_BUILTIN, HIGH);
-  delay(6000);
-  digitalWrite(LED_BUILTIN, LOW);
-  delay(6000);
+  int celsius = thermo.getTemperature();
+
+  //led matrix
+
+  uint32_t white = 0xFFFFFFFF;
+  matrix.beginDraw();
+  matrix.stroke(white);
+  matrix.textFont(Font_4x6);
+  matrix.beginText(0, 1, white);
+  matrix.print(celsius);
+  matrix.print("°C");
+  matrix.endText();
+  matrix.endDraw();
+
+  //serial monitor
+  Serial.print("Temperatur (°C) is: ");
+  Serial.println(celsius);
+
+  delay(1000);
 }
